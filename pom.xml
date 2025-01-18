@@ -1,0 +1,106 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>nl.pals.generator</groupId>
+	<artifactId>entity-generator</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>EntityGenerator</name>
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<!--plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
+				<configuration>
+					<release>21</release>
+				</configuration>
+			</plugin>
+		</plugins-->
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.11.0</version><!-- 3.6.2 is the minimum -->
+				<configuration>
+					<release>21</release>
+					<compilerId>groovy-eclipse-compiler</compilerId>
+					<compilerArguments>
+						<indy /><!-- optional; supported by batch 2.4.12-04+ -->
+						<!--configScript>config.groovy</configScript-->
+					</compilerArguments>
+					<failOnWarning>true</failOnWarning><!-- optional; supported
+					by batch 2.5.8-02+ -->
+					<fork>true</fork><!-- optional; enables Parrot Parser by
+					default for Groovy 3+ -->
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.codehaus.groovy</groupId>
+						<artifactId>groovy-eclipse-compiler</artifactId>
+						<version>3.9.0</version>
+					</dependency>
+					<dependency>
+						<groupId>org.codehaus.groovy</groupId>
+						<artifactId>groovy-eclipse-batch</artifactId>
+						<version>4.0.24-03</version><!-- "01" for JDK 8; "02"
+						for JDK 11; "03" for JDK 17+ -->
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.groovy</groupId>
+				<artifactId>groovy-eclipse-compiler</artifactId>
+				<version>3.9.0</version>
+				<extensions>true</extensions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>3.3.0</version>
+				<executions>
+					<execution>
+						<id>add-source</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/main/groovy</source>
+							</sources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>add-test-source</id>
+						<phase>generate-test-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/test/groovy</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.groovy</groupId>
+			<artifactId>groovy-all</artifactId>
+			<version>4.0.24</version>
+			<type>pom</type>
+		</dependency>
+	</dependencies>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>groovy-plugins-release</id>
+			<url>https://groovy.jfrog.io/artifactory/plugins-release</url>
+		</pluginRepository>
+
+	</pluginRepositories>
+</project>
