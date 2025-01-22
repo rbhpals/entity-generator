@@ -23,7 +23,7 @@ class Entity extends Randomizer {
 	}
 
 	def propertyMissing(String name, value) {
-		properties[name] = value
+		//properties[name] = value
 	}
 
 	def methodMissing(String name, args) {
@@ -63,6 +63,14 @@ class Entity extends Randomizer {
 	}
 }
 
+static def toJson(Entity entity) {
+	// Convert the entity structure to a Map and then to JSON
+	def rootEntityMap = entity.toMap()
+	def jsonOutput = JsonOutput.toJson(rootEntityMap)
+	
+	// return the JSON output
+	return JsonOutput.prettyPrint(jsonOutput)
+}
 // DSL Builder for creating entities
 static def entity(String name, Closure closure) {
 	Entity newEntity = new Entity(name: name)
@@ -71,65 +79,58 @@ static def entity(String name, Closure closure) {
 	return newEntity
 }
 
-// Function to load and evaluate a DSL file
-def loadDslFile(String fileName) {
-	def dslFile = new File(fileName)
-	if (!dslFile.exists()) {
-		throw new FileNotFoundException("DSL file not found: $fileName")
-	}
-	def dslContent = dslFile.text
-	return evaluate(dslContent)
-}
+//// Function to load and evaluate a DSL file
+//def loadDslFile(String fileName) {
+//	def dslFile = new File(fileName)
+//	if (!dslFile.exists()) {
+//		throw new FileNotFoundException("DSL file not found: $fileName")
+//	}
+//	def dslContent = dslFile.text
+//	return evaluate(dslContent)
+//}
 
-def toJson(Entity entity) {
-	// Convert the entity structure to a Map and then to JSON
-	def rootEntityMap = entity.toMap()
-	def jsonOutput = JsonOutput.toJson(rootEntityMap)
-	
-	// return the JSON output
-	return JsonOutput.prettyPrint(jsonOutput)
-}
 
-// Create the Swing GUI
-def createAndShowGUI() {
-	JFrame frame = new JFrame("DSL Loader")
-	frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
-	frame.setSize(400, 300)
 
-	JPanel panel = new JPanel()
-	panel.setLayout(new FlowLayout())
-
-	JButton loadButton = new JButton("Load DSL File")
-	JTextArea textArea = new JTextArea(50, 30)
-	textArea.setEditable(false)
-
-	loadButton.addActionListener(new ActionListener() {
-				@Override
-				void actionPerformed(ActionEvent e) {
-					JFileChooser fileChooser = new JFileChooser()
-					int returnValue = fileChooser.showOpenDialog(frame)
-					if (returnValue == JFileChooser.APPROVE_OPTION) {
-						File selectedFile = fileChooser.selectedFile
-						try {
-							def app = loadDslFile(selectedFile.absolutePath)
-							//textArea.setText(app.toString())
-							textArea.setText(toJson(app).toString())
-							
-						} catch (Exception ex) {
-							textArea.setText("Error: ${ex.message}")
-						}
-					}
-				}
-			})
-
-	panel.add(loadButton)
-	panel.add(new JScrollPane(textArea))
-
-	frame.getContentPane().add(panel)
-	frame.setVisible(true)
-}
-
-// Run the GUI
-SwingUtilities.invokeLater {
-	createAndShowGUI()
-}
+//// Create the Swing GUI
+//def createAndShowGUI() {
+//	JFrame frame = new JFrame("DSL Loader")
+//	frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
+//	frame.setSize(400, 300)
+//
+//	JPanel panel = new JPanel()
+//	panel.setLayout(new FlowLayout())
+//
+//	JButton loadButton = new JButton("Load DSL File")
+//	JTextArea textArea = new JTextArea(50, 30)
+//	textArea.setEditable(false)
+//
+//	loadButton.addActionListener(new ActionListener() {
+//				@Override
+//				void actionPerformed(ActionEvent e) {
+//					JFileChooser fileChooser = new JFileChooser(new File("/Users/rbhpals/dev/repo/git/entity-generator/src/main/scripts"))
+//					int returnValue = fileChooser.showOpenDialog(frame)
+//					if (returnValue == JFileChooser.APPROVE_OPTION) {
+//						File selectedFile = fileChooser.selectedFile
+//						try {
+//							def app = loadDslFile(selectedFile.absolutePath)
+//							//textArea.setText(app.toString())
+//							textArea.setText(toJson(app).toString())
+//							
+//						} catch (Exception ex) {
+//							textArea.setText("Error: ${ex.message}")
+//						}
+//					}
+//				}
+//			})
+//
+//	panel.add(loadButton)
+//	panel.add(new JScrollPane(textArea))
+//
+//	frame.getContentPane().add(panel)
+//	frame.setVisible(true)
+//}
+//
+//// Run the GUI
+//SwingUtilities.invokeLater {
+//	createAndShowGUI()
+//}
