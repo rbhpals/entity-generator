@@ -15,6 +15,9 @@ import javax.swing.JButton
 import javax.swing.JFileChooser
 import javax.swing.JFrame
 import javax.swing.JLabel
+import javax.swing.JMenu
+import javax.swing.JMenuBar
+import javax.swing.JMenuItem
 import javax.swing.JOptionPane
 import javax.swing.JPanel
 import javax.swing.JScrollPane
@@ -30,6 +33,7 @@ def swing = new SwingBuilder()
 swing.edt {
 	frame(title: 'Groovy DSL Editor', size: [600, 400], show: true) {
 		borderLayout()
+		
 		// Create a menu bar
 		menuBar {
 			menu('File') {
@@ -41,8 +45,7 @@ swing.edt {
 				})
 			}
 		}
-
-
+		
 		// Text area for editing the script
 		textArea(id: 'scriptArea', lineWrap: true, wrapStyleWord: true) {
 			preferredSize = [580, 300]
@@ -207,14 +210,10 @@ def viewResult() {
 	createTable(lines)
 }
 
-// Function to read lines from a file als bestand te groot is, dan bufferedReader
-//def readLinesFromFile(String filePath) {
-//	return Files.readAllLines(Paths.get(filePath))
-//}
 /**
  * Buffered reader omdat bestand groot kan zijn!!!!!!!
  * @param filePath absolute naam van het bestand
- * @return elke regel in het bestand als een lijst 
+ * @return elke regel in het bestand als een lijst
  */
 def readLinesFromFile(Path filePath) {
 	def lines = []
@@ -257,129 +256,9 @@ def updateContentWindow(JFrame contentFrame, String content) {
 	textArea.setText(content)
 }
 
-class Paginator {
-	int currentPage = 0
-	int rowsPerPage = 25
-	List<String> data
 
-	Paginator(List<String> data) {
-		this.data = data
-	}
-
-	List<String> getCurrentPageData() {
-		int start = currentPage * rowsPerPage
-		int end = Math.min(start + rowsPerPage, data.size())
-		return data.subList(start, end)
-	}
-
-	boolean hasNext() {
-		return (currentPage + 1) * rowsPerPage < data.size()
-	}
-
-	boolean hasPrevious() {
-		return currentPage > 0
-	}
-
-	void nextPage() {
-		if (hasNext()) {
-			currentPage++
-		}
-	}
-
-	void previousPage() {
-		if (hasPrevious()) {
-			currentPage--
-		}
-	}
-}
-
-def createTable(List<String> lines) {
-	def paginator = new Paginator(lines)
-	def frame = new JFrame("Generated Entities")
-	frame.defaultCloseOperation = JFrame.DISPOSE_ON_CLOSE
-	frame.setLayout(new BorderLayout())
-
-	def tableModel = new DefaultTableModel()
-	tableModel.addColumn("Content")
-	def table = new JTable(tableModel)
-
-	def updateTable = {
-		tableModel.setRowCount(0) // Clear existing rows
-		paginator.getCurrentPageData().each { line ->
-			tableModel.addRow([line] as Object[])
-		}
-	}
-
-	updateTable()
-
-	// Pagination controls
-	def paginationPanel = new JPanel()
-	def previousButton = new JButton("Previous")
-	def nextButton = new JButton("Next")
-
-	previousButton.addActionListener {
-		paginator.previousPage()
-		updateTable()
-	}
-
-	nextButton.addActionListener {
-		paginator.nextPage()
-		updateTable()
-	}
-
-	paginationPanel.add(previousButton)
-	paginationPanel.add(nextButton)
-
-	// Add table and pagination to frame
-	frame.add(new JScrollPane(table), BorderLayout.CENTER)
-	frame.add(paginationPanel, BorderLayout.SOUTH)
-
-	// Content window reference
-	JFrame contentFrame = null
-
-	// Row click listener
-	table.addMouseListener(new MouseAdapter() {
-				@Override
-				void mouseClicked(MouseEvent e) {
-					int row = table.getSelectedRow()
-					if (row != -1) {
-						//String content = table.getValueAt(row, 1).toString()
-						// content alle tekens tot aan { verwijderen bijv Result voor run 1: {"Contract.. wordt {"Contract....
-						String content = table.getValueAt(row, 0).toString().replaceFirst(".*?\\{", "{")
-						content = JsonOutput.prettyPrint(content)
-						if (contentFrame == null || !contentFrame.isDisplayable()) {
-							contentFrame = showContentWindow(content)
-						} else {
-							updateContentWindow(contentFrame, content)
-						}
-						//showContentWindow(JsonOutput.prettyPrint(content))
-					}
-				}
-			})
-
-	// Key listener for arrow down key
-	table.addKeyListener(new KeyAdapter() {
-				@Override
-				public void keyPressed(KeyEvent e) {
-					if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_UP) {
-						int row = table.getSelectedRow()
-						if (row != -1) {
-							//String content = table.getValueAt(row, 1).toString()
-							// content alle tekens tot aan { verwijderen bijv Result voor run 1: {"Contract.. wordt {"Contract....
-							String content = table.getValueAt(row, 0).toString().replaceFirst(".*?\\{", "{")
-							content = JsonOutput.prettyPrint(content)
-							if (contentFrame == null || !contentFrame.isDisplayable()) {
-								contentFrame = showContentWindow(content)
-							} else {
-								updateContentWindow(contentFrame, content)
-							}
-						}
-					}
-				}
-			})
-
-	frame.setSize(400, 300)
-	frame.setVisible(true)
+def createTable(List<String> rows) {
+	def paginator = new Pagination(rows)
 }
 
 
